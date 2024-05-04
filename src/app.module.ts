@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { WinstonModule } from 'nest-winston';
+import { LoginModule } from './login/login.module';
 import * as winston from 'winston';
 
 @Module({
@@ -17,7 +18,7 @@ import * as winston from 'winston';
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      // synchronize: false,
+      // synchronize: true,
       autoLoadEntities: true,
     }),
     ServeStaticModule.forRoot(),
@@ -50,6 +51,7 @@ import * as winston from 'winston';
         }),
       ],
     }),
+    LoginModule,
   ],
   controllers: [AppController],
   providers: [AppService],
