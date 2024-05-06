@@ -91,34 +91,34 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
        tlId: number;
 
        @ManyToOne(() => empDetails, (e) => (e.id))
-       @JoinColumn({ name: 'proId'})
-       proId: number;
+       @JoinColumn({ name: 'pmoId'})
+       pmoId: number;
        
         @Column()
-        startDate: Date;
+        startDate: string;
 
         @Column()
-        endDate: Date;
+        endDate: string;
 
-        @Column()
+        @Column({nullable: true})
         thumbnail: string;
 
-        @Column()
+        @Column({nullable: true})
         createdAt: Date;
 
-        @Column()
+        @Column({nullable: true})
         updatedAt: Date;
 
-        @Column()
+        @Column({nullable: true})
         deletedAt: Date;
 
-        @Column()
+        @Column({nullable: true})
         createdBy: number;
 
-        @Column()
+        @Column({nullable: true})
         updatedBy: number;
 
-        @Column()
+        @Column({nullable: true})
         deletedBy: number;
 
     }
@@ -137,13 +137,13 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
         @JoinColumn({ name: 'empId'})
         empId: number;
 
-        @Column()
+        @Column({nullable: true})
         createdAt: Date;
 
-        @Column()
+        @Column({nullable: true})
         updatedAt: Date;
 
-        @Column()
+        @Column({nullable: true})
         deletedAt: Date;
 
         @ManyToOne(() => empDetails, (e) => (e.id))

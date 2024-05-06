@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { empDetails, role } from './entities/login.entity';
+import { empDetails, proEmpMapping, projectDetails, role } from './entities/login.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { roleList } from 'src/core/variables/enum';
@@ -17,6 +17,12 @@ export class LoginService {
 
     @InjectRepository(empDetails)
     private  empDetailsRepo: Repository<empDetails>,
+
+    @InjectRepository(projectDetails)
+    private  projectDetailsRepo: Repository<projectDetails>,
+
+    @InjectRepository(proEmpMapping)
+    private  proEmpMappingRepo: Repository<proEmpMapping>,
 
   ) { }
 
@@ -66,6 +72,44 @@ export class LoginService {
     .where('emp.email = :email', { email })
     .andWhere('emp.isActive = true')
     .getRawOne();
+  }
+
+  async saveProjectDetails(proData) {
+     return await this.projectDetailsRepo.save(proData)
+  }
+
+  async saveEmployeeDetails(empData) {
+    return await this.proEmpMappingRepo.save(empData)
+  }
+
+  async getProjectDetails() {
+    return await this.projectDetailsRepo.createQueryBuilder('pro')
+      .innerJoin(proEmpMapping, 'pem', 'pem.proId = pro.id')
+      .innerJoin(empDetails, 'emp', 'emp.id = pro.tlId')
+      .select([
+        'pro.id as id',
+        'pro.proName as proName',
+        'pro.startDate as startDate',
+        'pro.endDate as dueDate',
+        'pro.tlId as tlId',
+        'emp.name as tlName',
+        'pro.pmoId as pmoId',
+      ])
+      .addSelect(subQuery => {
+        return subQuery
+          .select('JSON_ARRAYAGG(pem.empId)', 'empId')
+          .from(proEmpMapping, 'pem')
+          .where('pem.proId = pro.id');
+      }, 'empId')
+      .addSelect(subQuery => {
+        return subQuery
+          .innerJoin(empDetails,'emp','emp.id = pro.pmoId')
+          .select('emp.name')
+          .from(projectDetails, 'pro')
+          .where('pem.proId = pro.id')
+      }, 'pmoName')
+      .groupBy('pro.id')
+      .getRawMany();
   }
 
 }

@@ -12,12 +12,12 @@ import { roleList } from 'src/core/variables/enum';
 export class LoginController {
   constructor(
     private loginService: LoginService,
-    private utilservice: UtilService
+    private utilService: UtilService
     ) {}
 
   @Get('getMasterList')
   async getMasterList(@Req() req: Request, @Res() res: Response) {
-  const logger = this.utilservice.createLogger(LoginController.name);
+  const logger = this.utilService.createLogger(LoginController.name);
   try {
     const data = await this.loginService.getMasterList();
     logger.info('Get master list successfully');
@@ -38,7 +38,7 @@ export class LoginController {
 }
 @Post('login')
 async login(@Req() req: Request, @Res() res: Response, @Body() loginData: any) {
-  const logger = this.utilservice.createLogger(LoginController.name);
+  const logger = this.utilService.createLogger(LoginController.name);
   try {
     const data = await this.loginService.getLoginData(loginData.email);
     const empData = [
@@ -69,6 +69,72 @@ async login(@Req() req: Request, @Res() res: Response, @Body() loginData: any) {
     });
   }
 }
+
+  @Post('projectSaveData')
+  async projectSaveData(@Req() req: Request, @Res() res: Response, @Body() projectSaveData: any) {
+    const logger = this.utilService.createLogger(LoginController.name);
+    try {
+      const proData = [
+        {
+          proName: projectSaveData.proName,
+          startDate: projectSaveData.startDate,
+          endDate: projectSaveData.dueDate,
+          tlId: projectSaveData.tlId,
+          pmoId: projectSaveData.pmoId
+        }
+      ]
+      let savedProject = await this.loginService.saveProjectDetails(proData);
+      console.log('savedProject', savedProject);
+      let empData = [];
+
+      projectSaveData.empId.forEach(empId => {
+        empData.push({
+          proId: savedProject[0].id,
+          empId: empId
+        });
+      });
+
+      console.log('empData', empData);
+      const savedEmployee = await this.loginService.saveEmployeeDetails(empData);
+
+      logger.info('Project data save successfully');
+      res.status(HttpStatus.OK).json({
+        status: true,
+        message: 'Project data save successfully',
+      });
+    } catch (err) {
+      console.error('Error in projectSaveData:', err);
+      logger.error(`Something went wrong: ${err.message}`);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        status: false,
+        message: 'Internal server error',
+      });
+    }
+
+  }
+
+  @Get('getProjectDetails')
+  async getProjectDetails(@Req() req: Request, @Res() res: Response) {
+  const logger = this.utilService.createLogger(LoginController.name);
+  try {
+    const data = await this.loginService.getProjectDetails();
+    logger.info('Get project list successfully');
+    res.status(HttpStatus.OK).json({
+      status: true,
+      message: 'Get project list successfully',
+      data: data,
+    });
+  } catch (err) {
+    console.error('Error in getProjectDetails:', err);
+    logger.error(`something went error${JSON.stringify(err)}`);
+    return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+      status: false,
+      message: 'something went error',
+      error: err.message,
+    });
+  }
+}
+
 
 
 
