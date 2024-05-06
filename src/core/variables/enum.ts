@@ -4,3 +4,8 @@ export enum roleList {
     employee = 3,
     teamLead = 4
 }
+
+export enum progressEnum {
+    todo = 2,
+    completed = 1
+}

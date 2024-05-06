@@ -176,6 +176,10 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
         @JoinColumn({ name: 'empId'})
         empId: number;
 
+        @ManyToOne(() => empDetails, (e) => (e.id))
+        @JoinColumn({ name: 'pmoId'})
+        pmoId: number;
+
         @Column()
         dueDate: string;
 

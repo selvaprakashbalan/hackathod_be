@@ -246,6 +246,72 @@ async login(@Req() req: Request, @Res() res: Response, @Body() loginData: any) {
   }
 }
 
+  @Get('getEmpProjectDetails/:id')
+  async getEmpProjectDetails(@Req() req: Request, @Res() res: Response, @Param('id') id: number) {
+    const logger = this.utilService.createLogger(LoginController.name);
+    try {
+      const data = await this.loginService.getEmpProjectDetails(id);
+      logger.info('Get employee project list successfully');
+      res.status(HttpStatus.OK).json({
+        status: true,
+        message: 'Get employee project list successfully',
+        data: data,
+      });
+    } catch (err) {
+      console.error('Error in getEmpProjectDetails:', err);
+      logger.error(`something went error${JSON.stringify(err)}`);
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+        status: false,
+        message: 'something went error',
+        error: err.message,
+      });
+    }
+  }
+
+  @Get('getEmpTaskDetails/:id')
+  async getEmpTaskDetails(@Req() req: Request, @Res() res: Response, @Param('id') id: number) {
+    const logger = this.utilService.createLogger(LoginController.name);
+    try {
+      const data = await this.loginService.getEmpTaskDetails(id);
+      logger.info('Get employee task list successfully');
+      res.status(HttpStatus.OK).json({
+        status: true,
+        message: 'Get employee task list successfully',
+        data: data,
+      });
+    } catch (err) {
+      console.error('Error in getEmpTaskDetails:', err);
+      logger.error(`something went error${JSON.stringify(err)}`);
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+        status: false,
+        message: 'something went error',
+        error: err.message,
+      });
+    }
+  }
+
+  @Get('saveProgressId/:id')
+  async saveProgressId(@Req() req: Request, @Res() res: Response, @Param('id') id: number) {
+    const logger = this.utilService.createLogger(LoginController.name);
+    try {
+      const data = await this.loginService.saveProgressId(id);
+      logger.info('Task completed');
+      res.status(HttpStatus.OK).json({
+        status: true,
+        message: 'Task completed',
+        data: data,
+      });
+    } catch (err) {
+      console.error('Error in saveProgressId:', err);
+      logger.error(`something went error${JSON.stringify(err)}`);
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+        status: false,
+        message: 'something went error',
+        error: err.message,
+      });
+    }
+  }
+
 
 
 

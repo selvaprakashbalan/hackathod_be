@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { empDetails, priority, proEmpMapping, progress, projectDetails, role, taskDetails } from './entities/login.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { roleList } from 'src/core/variables/enum';
+import { progressEnum, roleList } from 'src/core/variables/enum';
 
 
 @Injectable()
@@ -205,5 +205,63 @@ export class LoginService {
     .where('td.proId = :id', { id })
     .getRawMany();
   }
+
+  async getEmpProjectDetails(id: number) {
+    return await this.projectDetailsRepo.createQueryBuilder('pro')
+    .innerJoin(proEmpMapping, 'pem', 'pem.proId = pro.id')
+    .innerJoin(empDetails, 'emp', 'emp.id = pro.tlId')
+    .select([
+      'pro.id as id',
+      'pro.proName as proName',
+      'pro.startDate as startDate',
+      'pro.endDate as dueDate',
+      'pro.tlId as tlId',
+      'emp.name as tlName',
+      'pro.pmoId as pmoId',
+    ])
+    .addSelect(subQuery => {
+      return subQuery
+        .select('JSON_ARRAYAGG(pem.empId)', 'empId')
+        .from(proEmpMapping, 'pem')
+        .where('pem.proId = pro.id');
+    }, 'empId')
+    .addSelect(subQuery => {
+      return subQuery
+        .innerJoin(empDetails, 'emp', 'emp.id = pro.pmoId')
+        .select('emp.name')
+        .from(projectDetails, 'pro')
+        .where('pem.proId = pro.id')
+    }, 'pmoName')
+    .where('pem.empId = :empId', { empId: id })
+    .groupBy('pro.id')
+    .getRawMany();
+  }
+
+  async getEmpTaskDetails(id: number) {
+    return await this.taskDetailsRepo.createQueryBuilder('td')
+    .innerJoin(progress,'pro','pro.id = td.progressId')
+    .innerJoin(priority,'pri','pri.id = td.priorityId')
+    .innerJoin(empDetails,'emp','emp.id = td.pmoId')
+    .select([
+      'td.id as id',
+      'td.task as task',
+      'td.description as description',
+      'td.dueDate as dueDate',
+      'pro.name as progress',
+      'pri.name as priority',
+      'emp.name as assigned'
+    ])
+    .where('td.empId = :empId', { empId: id })
+    .getRawMany();
+  }
+
+  async saveProgressId(id: number) {
+    return await this.taskDetailsRepo.createQueryBuilder()
+    .update(taskDetails)
+    .set({ progressId: progressEnum.completed })
+    .where('id = :id', { id })
+    .execute();
+  }
+
 
 }
