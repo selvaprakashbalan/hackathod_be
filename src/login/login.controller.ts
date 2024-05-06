@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, Req, Res} from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res} from '@nestjs/common';
 import { LoginService } from './login.service';
 import { Request, Response } from 'express';
 import { UtilService } from 'src/core/util/util/util.service';
@@ -43,6 +43,7 @@ async login(@Req() req: Request, @Res() res: Response, @Body() loginData: any) {
     const data = await this.loginService.getLoginData(loginData.email);
     const empData = [
       {
+        id: data.id,
         name: data.name,
         roleId: data.roleId,
       }
@@ -126,6 +127,116 @@ async login(@Req() req: Request, @Res() res: Response, @Body() loginData: any) {
     });
   } catch (err) {
     console.error('Error in getProjectDetails:', err);
+    logger.error(`something went error${JSON.stringify(err)}`);
+    return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+      status: false,
+      message: 'something went error',
+      error: err.message,
+    });
+  }
+}
+
+  @Get('getPmoProjectDetails/:id')
+  async getPmoProjectDetails(@Req() req: Request, @Res() res: Response, @Param('id') id: number) {
+    const logger = this.utilService.createLogger(LoginController.name);
+    try {
+      const data = await this.loginService.getPmoProjectDetails(id);
+      logger.info('Get pmo project list successfully');
+      res.status(HttpStatus.OK).json({
+        status: true,
+        message: 'Get pom project list successfully',
+        data: data,
+      });
+    } catch (err) {
+      console.error('Error in getPmoProjectDetails:', err);
+      logger.error(`something went error${JSON.stringify(err)}`);
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+        status: false,
+        message: 'something went error',
+        error: err.message,
+      });
+    }
+  }
+
+  @Get('getTeamDetails/:id')
+  async getTeamDetails(@Req() req: Request, @Res() res: Response, @Param('id') id: number) {
+    const logger = this.utilService.createLogger(LoginController.name);
+    try {
+      const data = await this.loginService.getTeamDetails(id);
+      logger.info('Get team details successfully');
+      res.status(HttpStatus.OK).json({
+        status: true,
+        message: 'Get team details successfully',
+        data: data,
+      });
+    } catch (err) {
+      console.error('Error in getTeamDetails:', err);
+      logger.error(`something went error${JSON.stringify(err)}`);
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+        status: false,
+        message: 'something went error',
+        error: err.message,
+      });
+    }
+  }
+
+  @Get('getPriorityList')
+  async getPriorityList(@Req() req: Request, @Res() res: Response) {
+    const logger = this.utilService.createLogger(LoginController.name);
+    try {
+      const data = await this.loginService.getPriorityList();
+      logger.info('Get priority list successfully');
+      res.status(HttpStatus.OK).json({
+        status: true,
+        message: 'Get priority list successfully',
+        data: data,
+      });
+    } catch (err) {
+      console.error('Error in getPriorityList:', err);
+      logger.error(`something went error${JSON.stringify(err)}`);
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+        status: false,
+        message: 'something went error',
+        error: err.message,
+      });
+    }
+  }
+
+  @Post('taskSaveData')
+  async taskSaveData(@Req() req: Request, @Res() res: Response, @Body() taskData: any) {
+    const logger = this.utilService.createLogger(LoginController.name);
+    try {
+      const data = await this.loginService.taskSaveData(taskData);
+      logger.info('Save task details successfully');
+      res.status(HttpStatus.OK).json({
+        status: true,
+        message: 'Task assigned successfully',
+        data: data,
+      });
+    } catch (err) {
+      console.error('Error in taskSaveData:', err);
+      logger.error(`something went error${JSON.stringify(err)}`);
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+        status: false,
+        message: 'something went error',
+        error: err.message,
+      });
+    }
+  }
+
+  @Get('getTaskDetails/:id')
+  async getTaskDetails(@Req() req: Request, @Res() res: Response, @Param('id') id: number){
+  const logger = this.utilService.createLogger(LoginController.name);
+  try {
+    const data = await this.loginService.getTaskDetails(id);
+    logger.info('Get task list successfully');
+    res.status(HttpStatus.OK).json({
+      status: true,
+      message: 'Get task list successfully',
+      data: data,
+    });
+  } catch (err) {
+    console.error('Error in getTaskDetails:', err);
     logger.error(`something went error${JSON.stringify(err)}`);
     return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
       status: false,

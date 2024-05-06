@@ -165,16 +165,22 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
         @PrimaryGeneratedColumn()
         id: number;
 
-        @ManyToOne(() => empDetails, (e) => (e.id))
-        @JoinColumn({ name: 'tlId'})
-        tlId: number;
+        @Column({nullable: true})
+        task: string;
  
-        @ManyToOne(() => empDetails, (e) => (e.id))
+        @ManyToOne(() => projectDetails, (e) => (e.id))
         @JoinColumn({ name: 'proId'})
         proId: number;
 
+        @ManyToOne(() => empDetails, (e) => (e.id))
+        @JoinColumn({ name: 'empId'})
+        empId: number;
+
         @Column()
-        dueDate: Date;
+        dueDate: string;
+
+        @Column({nullable: true})
+        description: string;
 
         @ManyToOne(() => priority, (e) => (e.id))
         @JoinColumn({ name: 'priorityId'})
@@ -184,13 +190,13 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
         @JoinColumn({ name: 'progressId'})
         progressId  : number;
 
-        @Column()
+        @Column({nullable: true})
         createdAt: Date;
 
-        @Column()
+        @Column({nullable: true})
         updatedAt: Date;
 
-        @Column()
+        @Column({nullable: true})
         deletedAt: Date;
 
         @ManyToOne(() => empDetails, (e) => (e.id))
