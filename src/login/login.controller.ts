@@ -268,11 +268,11 @@ async login(@Req() req: Request, @Res() res: Response, @Body() loginData: any) {
     }
   }
 
-  @Get('getEmpTaskDetails/:id')
-  async getEmpTaskDetails(@Req() req: Request, @Res() res: Response, @Param('id') id: number) {
+  @Get('getEmpTaskDetails/:id/:proId')
+  async getEmpTaskDetails(@Req() req: Request, @Res() res: Response, @Param('id') id: number, @Param('proId') proId: number ) {
     const logger = this.utilService.createLogger(LoginController.name);
     try {
-      const data = await this.loginService.getEmpTaskDetails(id);
+      const data = await this.loginService.getEmpTaskDetails(id,proId);
       logger.info('Get employee task list successfully');
       res.status(HttpStatus.OK).json({
         status: true,

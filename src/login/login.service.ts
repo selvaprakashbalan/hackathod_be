@@ -237,7 +237,7 @@ export class LoginService {
     .getRawMany();
   }
 
-  async getEmpTaskDetails(id: number) {
+  async getEmpTaskDetails(id: number,proId: number) {
     return await this.taskDetailsRepo.createQueryBuilder('td')
     .innerJoin(progress,'pro','pro.id = td.progressId')
     .innerJoin(priority,'pri','pri.id = td.priorityId')
@@ -252,6 +252,7 @@ export class LoginService {
       'emp.name as assigned'
     ])
     .where('td.empId = :empId', { empId: id })
+    .andWhere('td.proId = :proId', { proId })
     .getRawMany();
   }
 
